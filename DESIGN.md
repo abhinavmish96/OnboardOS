@@ -156,7 +156,7 @@ Panel titles are mono uppercase labels, not headings.
 ## 8. Don'ts
 
 - No new colours outside the palette; no Tailwind default colour scales (`sky-`, `emerald-`,
-  `rose-`, `violet-`, `slate-`…). Check: `grep -rE "(sky|amber|emerald|rose|violet|slate)-[0-9]" src --include=*.tsx`
+  `rose-`, `violet-`, `slate-`…). Check: `grep -rE "(sky|amber|emerald|rose|violet|slate)-[0-9]" src --include='*.tsx'`
   (shadcn's own `components/ui` excepted).
 - No gradients on text or buttons; gradients only inside art fields.
 - No white (`#fff`) surfaces, no pure black text.
