@@ -13,16 +13,19 @@ OnboardOS/
     src/app/api/onboardings  API routes: forward to BACKEND_URL, else the stand-in
     src/server/engine.ts     stand-in backend (reference implementation of the contract)
     src/server/seed.ts       SpookyStream data, fictional rules, Ledger Mapping v1 / v2
+  landing/             ← marketing landing page (shadcn/ui), links to the dashboard
   backend/             ← Terse durable actor + Agent Relay (Aditi) — to be created
 ```
 
-## Run the dashboard
+## Run it
 
 ```bash
-cd web
-npm install
-npm run dev            # http://localhost:3000
+cd web && npm install && npm run dev -- -p 8000        # dashboard: http://localhost:8000
+cd landing && npm install && npm run dev -- -p 8001    # landing page: http://localhost:8001
 ```
+
+The landing page's "Try the demo" buttons go to `NEXT_PUBLIC_APP_URL` (default
+`http://localhost:8000`).
 
 With no `BACKEND_URL`, the dashboard runs on the stand-in engine (state in `web/.data/`),
 so the whole demo works today. To use Aditi's backend:
