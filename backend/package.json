@@ -7,6 +7,8 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
+    "@agent-relay/sdk": "^15.0.1",
+    "durable-actors": "^0.14.6",
     "express": "^4.21.0"
   },
   "devDependencies": {
