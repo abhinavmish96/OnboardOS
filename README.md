@@ -2,7 +2,7 @@
 
 **OnboardOS helps enterprise platforms onboard new businesses in weeks, not months.**
 
-Built for the YC Hackathon with **Terse**, **Agent Relay**, **OpenAI ChatKit**, and **Supabase**.
+Built for the YC Hackathon with **Terse**, **Agent Relay**, **OpenAI ChatKit**, **Supabase**, and **Next.js**.
 
 Three autonomous agents — Finance, Document, and Compliance — coordinate the accounting setup for a new subscription business. A human reviewer approves every document before launch. When something's wrong, the agents correct each other through real Agent Relay messages, regenerate the document, and send it back for approval.
 
@@ -14,6 +14,7 @@ Three autonomous agents — Finance, Document, and Compliance — coordinate the
 | [Agent Relay](https://github.com/AgentWorkforce/relay) | Real agent-to-agent DMs between Finance, Document, and Compliance agents. Every message is durable and inspectable. |
 | [OpenAI ChatKit](https://openai.com/chatkit) + Agents SDK | Onboardy, the in-dashboard chat assistant. Answers questions about launch status by calling the same API the dashboard uses. |
 | [Supabase](https://supabase.com) | Postgres stores onboarding snapshots, an append-only event log, version-tied approvals, and Onboardy's chat history. |
+| [Next.js](https://nextjs.org) + [shadcn/ui](https://ui.shadcn.com) | The admin dashboard (:8000) and the landing page (:8001), both Next.js 15 with Tailwind CSS. The dashboard's API routes proxy to the Express backend and host Onboardy's chat endpoint. |
 
 ## Architecture
 
