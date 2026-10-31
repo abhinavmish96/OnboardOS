@@ -15,7 +15,7 @@ const code = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "OnboardOS · The AI business launch orchestrator",
-  description: "Finance, document and compliance agents take a new business from requirements to launch-ready accounting. You approve every document.",
+  description: "OnboardOS helps enterprise platforms onboard new businesses in weeks, not months. Finance, document and compliance agents take each business from requirements to launch-ready accounting; you approve every document.",
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const WORDS = ["subscription", "marketplace", "storefront", "membership", "SaaS plan"];
+const WORDS = ["businesses", "merchants", "sellers", "partners", "customers"];
 
 export function RotatingWord() {
   const [i, setI] = useState(0);

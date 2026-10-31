@@ -159,12 +159,12 @@ export default function Home() {
           <div className="flex flex-col justify-between gap-10 bg-rosewood px-7 py-10 sm:px-12 sm:py-14">
             <span className="label-pill w-fit">AI business launch orchestrator</span>
             <h1 className="text-5xl leading-[1.04] font-medium tracking-tight sm:text-6xl">
-              Launch your <RotatingWord /> without the <span className="whitespace-nowrap">back-and-forth.</span>
+              Onboard new <RotatingWord /> in weeks, <span className="whitespace-nowrap">not months.</span>
             </h1>
             <div className="space-y-7">
               <p className="max-w-md text-lg text-ink/80">
-                Finance, document and compliance agents take a new business from requirements to launch-ready
-                accounting. You approve every document. When you say no, they fix it.
+                Finance, document and compliance agents take each business you onboard from requirements to
+                launch-ready accounting. You approve every document. When you say no, they fix it.
               </p>
               <Cta />
             </div>
