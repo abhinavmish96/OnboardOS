@@ -1,5 +1,7 @@
 # OnboardOS: the AI business launch orchestrator
 
+**OnboardOS helps enterprise platforms onboard new businesses in weeks, not months.**
+
 Built for the YC Hackathon with **Terse**, **Agent Relay**, **OpenAI ChatKit**, and **Supabase**.
 
 Three autonomous agents — Finance, Document, and Compliance — coordinate the accounting setup for a new subscription business. A human reviewer approves every document before launch. When something's wrong, the agents correct each other through real Agent Relay messages, regenerate the document, and send it back for approval.
