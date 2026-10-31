@@ -1,12 +1,11 @@
 /**
  * Stand-in workflow backend, used when BACKEND_URL isn't set. It implements the shared
- * contract the way the durable actor must: state persisted to disk, an append-only event
+ * contract the way the durable actor must: state persisted (Supabase, or a local file; see
+ * repo.ts), an append-only event
  * history, agent work advanced by explicit timed steps (no long-running process), reviews
  * tied to a document version, idempotent by operationId. Its relay messages are labelled
  * "simulated"; the real backend sends them through Agent Relay.
  */
-import fs from "node:fs";
-import path from "node:path";
 import crypto from "node:crypto";
 import {
   isLaunchReady,
@@ -30,39 +29,10 @@ import {
   SPOOKYSTREAM,
 } from "./seed";
 
-type StepKind = "finance" | "generate" | "compliance" | "relay_correction" | "relay_ack" | "revise" | "recheck";
-interface Step {
-  kind: StepKind;
-  dueAt: number; // epoch ms
-  documentId?: DocumentId;
-  threadId?: string;
-}
-interface Record_ {
-  onboarding: Onboarding;
-  events: WorkflowEvent[];
-  steps: Step[];
-  operations: Record<string, Onboarding>; // operationId -> result, for idempotency
-  awaitingSince: Partial<Record<DocumentId, number>>;
-  overdueFlagged: string[]; // "<doc>:v<n>"
-}
-type Store = Record<string, Record_>;
+import { repo, type Step, type WorkflowRecord as Record_ } from "./repo";
 
-const FILE = path.join(process.cwd(), ".data", "store.json");
 const SECOND = 1000;
 
-function load(): Store {
-  try {
-    return JSON.parse(fs.readFileSync(FILE, "utf8")) as Store;
-  } catch {
-    return {};
-  }
-}
-function save(store: Store): void {
-  fs.mkdirSync(path.dirname(FILE), { recursive: true });
-  const tmp = `${FILE}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(store, null, 1));
-  fs.renameSync(tmp, FILE); // atomic: a crash never leaves half a file
-}
 
 const iso = (ms: number) => new Date(ms).toISOString();
 
@@ -106,8 +76,7 @@ const TASKS: Omit<Task, "status">[] = [
   { id: "launch_readiness", title: "Launch readiness", owner: "orchestrator", dependsOn: ["human_approval"] },
 ];
 
-export function start(req: StartRequest): Onboarding {
-  const store = load();
+export async function start(req: StartRequest): Promise<Onboarding> {
   const now = Date.now();
   const id = crypto.randomUUID().slice(0, 8);
   const requirements = { ...SPOOKYSTREAM, ...(req.requirements ?? {}) };
@@ -128,7 +97,7 @@ export function start(req: StartRequest): Onboarding {
     },
     events: [],
     steps: [],
-    operations: {},
+    operations: [],
     awaitingSince: {},
     overdueFlagged: [],
   };
@@ -136,8 +105,7 @@ export function start(req: StartRequest): Onboarding {
   setTask(r, "business_requirements", "done", now, "Price, billing and refund policy captured");
   setTask(r, "finance_mapping", "running", now);
   r.steps.push({ kind: "finance", dueAt: now + 2 * SECOND });
-  store[id] = r;
-  save(store);
+  await repo.create(r);
   return r.onboarding;
 }
 
@@ -229,36 +197,33 @@ function run(r: Record_, s: Step, at: number): void {
   }
 }
 
-function get(store: Store, id: string): Record_ | ApiError {
-  const r = store[id];
-  return r ?? { error: `onboarding ${id} not found`, code: "not_found" };
+const notFound = (id: string): ApiError => ({ error: `onboarding ${id} not found`, code: "not_found" });
+
+export async function snapshot(id: string): Promise<Onboarding | ApiError> {
+  const out = await repo.update(id, (r) => {
+    advance(r, Date.now());
+    return r.onboarding;
+  });
+  return out ?? notFound(id);
 }
 
-export function snapshot(id: string): Onboarding | ApiError {
-  const store = load();
-  const r = get(store, id);
-  if ("error" in r) return r;
-  advance(r, Date.now());
-  save(store);
-  return r.onboarding;
+export async function events(id: string, after = 0): Promise<WorkflowEvent[] | ApiError> {
+  const out = await repo.update(id, (r) => {
+    advance(r, Date.now());
+    return r.events.filter((e) => e.seq > after);
+  });
+  return out ?? notFound(id);
 }
 
-export function events(id: string, after = 0): WorkflowEvent[] | ApiError {
-  const store = load();
-  const r = get(store, id);
-  if ("error" in r) return r;
-  advance(r, Date.now());
-  save(store);
-  return r.events.filter((e) => e.seq > after);
+export async function review(id: string, req: ReviewRequest): Promise<Onboarding | ApiError> {
+  const out = await repo.update(id, (r) => decide(r, req));
+  return out ?? notFound(id);
 }
 
-export function review(id: string, req: ReviewRequest): Onboarding | ApiError {
-  const store = load();
-  const r = get(store, id);
-  if ("error" in r) return r;
+function decide(r: Record_, req: ReviewRequest): Onboarding | ApiError {
   const now = Date.now();
   advance(r, now);
-  if (r.operations[req.operationId]) return r.operations[req.operationId]; // same click twice
+  if (r.operations.includes(req.operationId)) return r.onboarding; // same click twice: no second effect
   const d = r.onboarding.documents.find((x) => x.id === req.documentId);
   if (!d) return { error: `no document ${req.documentId}`, code: "not_found" };
   if (req.version !== d.currentVersion || d.status !== "awaiting_approval") {
@@ -286,24 +251,20 @@ export function review(id: string, req: ReviewRequest): Onboarding | ApiError {
       r.onboarding.status = r.onboarding.documents.some((x) => x.status === "awaiting_approval") ? "awaiting_review" : "in_progress";
     }
   }
-  r.operations[req.operationId] = structuredClone(r.onboarding);
-  save(store);
+  r.operations.push(req.operationId);
   return r.onboarding;
 }
 
-export function clock(id: string, req: ClockRequest): Onboarding | ApiError {
-  const store = load();
-  const r = get(store, id);
-  if ("error" in r) return r;
+export async function clock(id: string, req: ClockRequest): Promise<Onboarding | ApiError> {
   if (!(req.advanceMinutes > 0)) return { error: "advanceMinutes must be positive", code: "invalid" };
-  r.onboarding.clock.offsetMinutes += req.advanceMinutes;
-  advance(r, Date.now());
-  save(store);
-  return r.onboarding;
+  const out = await repo.update(id, (r) => {
+    r.onboarding.clock.offsetMinutes += req.advanceMinutes;
+    advance(r, Date.now());
+    return r.onboarding;
+  });
+  return out ?? notFound(id);
 }
 
-export function latest(): Onboarding | null {
-  const all = Object.values(load()).map((r) => r.onboarding);
-  all.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  return all[0] ?? null;
+export function latest(): Promise<Onboarding | null> {
+  return repo.latest();
 }

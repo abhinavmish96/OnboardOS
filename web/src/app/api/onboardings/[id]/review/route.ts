@@ -12,5 +12,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!body?.documentId || !body.version || !body.decision || !body.operationId) {
     return reply({ error: "documentId, version, decision and operationId are required", code: "invalid" as const });
   }
-  return reply(review(id, body));
+  return reply(await review(id, body));
 }

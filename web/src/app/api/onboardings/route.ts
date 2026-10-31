@@ -8,5 +8,5 @@ export async function POST(req: Request) {
   const proxied = await forward(req, "/api/onboardings");
   if (proxied) return proxied;
   const body = (await req.json().catch(() => ({}))) as StartRequest;
-  return reply(start(body));
+  return reply(await start(body));
 }

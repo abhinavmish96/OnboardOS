@@ -8,5 +8,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const proxied = await forward(req, `/api/onboardings/${id}/clock`);
   if (proxied) return proxied;
-  return reply(clock(id, (await req.json()) as ClockRequest));
+  return reply(await clock(id, (await req.json()) as ClockRequest));
 }

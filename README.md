@@ -52,6 +52,33 @@ BACKEND_URL=http://localhost:4000 npm run dev
 
 Every `/api/onboardings/*` call is then forwarded unchanged to the backend.
 
+## Database (Supabase)
+
+Project: `https://qperlfndpnhizuukdqwp.supabase.co`. Everything lives in the **`onboardos`
+schema** (in the Table Editor, switch the schema dropdown from `public` to `onboardos`):
+
+| Table | What |
+|---|---|
+| `onboardings` | Snapshot (`Onboarding` from the contract) + runtime (pending steps, SLA clocks) |
+| `events` | Append-only history (`seq` per onboarding; updates and deletes are refused) |
+| `approvals` | One row per decision, tied to a document version; `operation_id` unique |
+| `chat_threads`, `chat_items`, `chat_attachments` | Onboardy conversations, per admin |
+
+RLS is on with no policies: the public API (anon/publishable key) can't read or write
+anything. Servers connect to Postgres directly.
+
+**Setup (each of us, once):**
+
+```bash
+cp .env.supabase.example .env.supabase     # fill in the DB password (shared privately, never committed)
+cd web && node scripts/db-migrate.mjs      # creates/updates the tables (safe to re-run)
+```
+
+With `SUPABASE_DB_URL` set, the dashboard's stand-in and Onboardy store everything in
+Supabase; without it they fall back to local files. **Aditi:** the actor reads and writes the
+same tables: lock the onboarding row (`select … for update`), append to `events`, insert into
+`approvals`, update `snapshot`/`status`. `web/src/server/repo.ts` is the reference.
+
 ## The demo (acceptance test)
 
 1. Start SpookyStream onboarding.

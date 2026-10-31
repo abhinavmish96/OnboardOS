@@ -22,7 +22,7 @@ from chatkit.types import ClientEffectEvent, ThreadMetadata, ThreadStreamEvent, 
 from fastapi import FastAPI, Request
 from fastapi.responses import Response, StreamingResponse
 
-from store import SQLiteStore
+from store import make_store
 
 API = os.environ.get("ONBOARDOS_API", "http://localhost:8000").rstrip("/")
 MODEL = os.environ.get("ONBOARDY_MODEL", "gpt-4.1-mini")
@@ -263,7 +263,8 @@ class OnboardyServer(ChatKitServer[dict[str, Any]]):
         await self.store.save_thread(thread, context)
 
 
-server = OnboardyServer(SQLiteStore())
+STORE = make_store()
+server = OnboardyServer(STORE)
 app = FastAPI(title="Onboardy")
 
 
@@ -281,4 +282,4 @@ async def chatkit(request: Request) -> Response:
 
 @app.get("/health")
 async def health() -> dict[str, str]:
-    return {"ok": "onboardy", "model": MODEL, "api": API}
+    return {"ok": "onboardy", "model": MODEL, "api": API, "store": type(STORE).__name__}
