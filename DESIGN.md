@@ -132,7 +132,19 @@ field (`<Field tone="ember|dune|oasis">` from `landing/src/components/Art.tsx`),
 progress) → three columns `lg:grid-cols-[240px_1fr_340px]`: workflow, documents, activity.
 Panel titles are mono uppercase labels, not headings.
 
-## 6. Art
+## 6. Onboardy (chat)
+
+- **Bubble:** bottom-right, `bg-ink` pill with a terracotta circle holding the white chat
+  doodle; label "Onboardy" / "Close". A peach dot marks a reply that arrived while closed.
+- **Panel:** 420 × 640, `rounded-2xl`, cream, hairline border, `shadow-2xl` (the one other
+  allowed shadow). Stays mounted when closed, so the chat never resets.
+- **ChatKit theme** (`web/src/components/Onboardy.tsx`): light, `radius: "round"`, grayscale
+  hue 45 tint 2, accent ink `#0e1113`, surface cream/ink, Inclusive Sans and JetBrains Mono
+  loaded by URL (ChatKit draws in its own frame).
+- **Voice:** an ops colleague. Answer first, name the document and version, say what changed
+  and what happens next. Prompts are questions the admin would ask ("What needs my approval?").
+
+## 7. Art
 
 - **Fields**: blurred colour gradients with soft horizontal light streaks, our stand-in for
   motion-blurred photography. Tones: `ember` (terracotta/clay/peach), `dune` (sand/cream),
@@ -144,7 +156,7 @@ Panel titles are mono uppercase labels, not headings.
 - Real photos: warm, motion-blurred, single subject, placed only inside a Field-shaped
   slot. Use only images we own or license; never copy the reference site's photos.
 
-## 7. Voice
+## 8. Voice
 
 - Headlines: two short sentences, contrast or consequence. "The work isn't the problem.
   The handoffs are." / "Say no. Watch it get fixed."
@@ -153,7 +165,7 @@ Panel titles are mono uppercase labels, not headings.
   "Run it yourself".
 - Never: "seamless", "revolutionary", "AI-powered" as filler; fake numbers or logos.
 
-## 8. Don'ts
+## 9. Don'ts
 
 - No new colours outside the palette; no Tailwind default colour scales (`sky-`, `emerald-`,
   `rose-`, `violet-`, `slate-`…). Check: `grep -rE "(sky|amber|emerald|rose|violet|slate)-[0-9]" src --include='*.tsx'`

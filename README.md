@@ -15,6 +15,7 @@ OnboardOS/
     src/server/engine.ts     stand-in backend (reference implementation of the contract)
     src/server/seed.ts       SpookyStream data, fictional rules, Ledger Mapping v1 / v2
   landing/             ← marketing landing page (shadcn/ui), links to the dashboard
+  agent/               ← Onboardy: the admin's chat assistant (ChatKit server + Agents SDK)
   backend/             ← Terse durable actor + Agent Relay (Aditi) — to be created
 ```
 
@@ -24,6 +25,20 @@ OnboardOS/
 cd web && npm install && npm run dev -- -p 8000        # dashboard: http://localhost:8000
 cd landing && npm install && npm run dev -- -p 8001    # landing page: http://localhost:8001
 ```
+
+Onboardy, the chat bubble in the dashboard, needs its agent service:
+
+```bash
+cd agent && echo "OPENAI_API_KEY=sk-..." > .env && ./run.sh            # http://localhost:8002
+```
+
+The dashboard proxies chat through `/api/chatkit` to `ONBOARDY_URL` (default
+`http://localhost:8002`). Onboardy acts only through the OnboardOS API (status, documents,
+activity, approve/reject a version, advance the clock, start an onboarding), so it can't do
+anything the UI can't, and every change it makes appears in the dashboard. Conversations are
+saved in `agent/.data/onboardy.sqlite`; the open thread is restored after a refresh.
+Deploying beyond localhost needs a ChatKit domain key: register the domain in the OpenAI
+dashboard and set `NEXT_PUBLIC_CHATKIT_DOMAIN_KEY`.
 
 The landing page's "Try the demo" buttons go to `NEXT_PUBLIC_APP_URL` (default
 `http://localhost:8000`).

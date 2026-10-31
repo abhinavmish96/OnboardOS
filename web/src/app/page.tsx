@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Decision, Document, Onboarding, WorkflowEvent } from "@contract/contract";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { DocumentCard } from "@/components/DocumentCard";
+import { Onboardy } from "@/components/Onboardy";
 import { ReviewModal } from "@/components/ReviewModal";
 import { Workflow } from "@/components/Workflow";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -21,6 +22,21 @@ const STATUS: Record<Onboarding["status"], { label: string; cls: string }> = {
   revising: { label: "Revising", cls: "bg-dusty-pink/40 text-ink" },
   launch_ready: { label: "Launch ready", cls: "bg-sage/70 text-ink" },
 };
+
+const REFRESH_EVENT = "onboardos:refresh";
+
+/** Onboardy lives outside the dashboard's screens so its chat never remounts. */
+function OnboardyHost() {
+  const router = useRouter();
+  const id = useSearchParams().get("id");
+  return (
+    <Onboardy
+      onboardingId={id}
+      onChanged={() => window.dispatchEvent(new Event(REFRESH_EVENT))}
+      onOpenOnboarding={(next) => router.push(`/?id=${next}`)}
+    />
+  );
+}
 
 function Dashboard() {
   const router = useRouter();
@@ -54,7 +70,12 @@ function Dashboard() {
     if (!id) return;
     refresh();
     const timer = setInterval(refresh, 1000);
-    return () => clearInterval(timer);
+    // Onboardy changed something: show it now rather than on the next poll.
+    window.addEventListener(REFRESH_EVENT, refresh);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener(REFRESH_EVENT, refresh);
+    };
   }, [id, refresh]);
 
   async function start() {
@@ -125,7 +146,7 @@ function Dashboard() {
   const overdue = events.some((e) => e.type === "approval.overdue");
 
   return (
-    <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
+    <main className="mx-auto max-w-7xl space-y-6 px-4 pt-6 pb-24 sm:px-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="min-w-0 flex-1">
           <span className="label-pill max-w-full">OnboardOS · {onboarding.requirements.product}</span>
@@ -220,6 +241,7 @@ export default function Page() {
   return (
     <Suspense>
       <Dashboard />
+      <OnboardyHost />
     </Suspense>
   );
 }
