@@ -7,6 +7,8 @@
  */
 import express from "express";
 import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import type { ApiError, ClockRequest, ReviewRequest, StartRequest } from "./contract.js";
 
 // ── Terse actor client ─────────────────────────────────────────────────────
@@ -83,15 +85,53 @@ async function relaySend(from: string, to: string, text: string): Promise<string
  * and send them through Agent Relay.
  */
 async function drainRelayMessages(actorId: string): Promise<void> {
-  try {
-    const actor = actors.OnboardingActor.get(actorId);
-    const msgs = await actor.getLastRelayMessages();
-    for (const m of msgs) {
-      await relaySend(m.from, m.to, m.text);
+  // One drain at a time per onboarding, so a reader can wait for sends already in flight.
+  const previous = draining.get(actorId) ?? Promise.resolve();
+  const next = previous.then(async () => {
+    try {
+      const actor = actors.OnboardingActor.get(actorId);
+      const msgs = await actor.getLastRelayMessages();
+      for (const m of msgs) {
+        if (await relaySend(m.from, m.to, m.text)) markSent(actorId, m);
+      }
+    } catch {
+      // Actor may not have relay messages; ignore
     }
+  });
+  draining.set(actorId, next);
+  return next;
+}
+
+// ── What Agent Relay actually accepted ──────────────────────────────────────
+// The actor records every agent message as "simulated"; only a message Agent Relay accepted
+// is shown as "agent_relay". Kept on disk so the labels survive a restart.
+
+const draining = new Map<string, Promise<void>>();
+const SENT_FILE = path.join(process.cwd(), ".data", "relay-sent.json"); // run from backend/
+const sent = new Set<string>(loadSent());
+
+function relayKey(onboardingId: string, m: { from: string; to?: string; threadId?: string; text?: string; message?: string }): string {
+  return [onboardingId, m.threadId ?? "", m.from, m.to ?? "", m.text ?? m.message ?? ""].join("\u0000");
+}
+function loadSent(): string[] {
+  try {
+    return JSON.parse(fs.readFileSync(SENT_FILE, "utf8"));
   } catch {
-    // Actor may not have relay messages; ignore
+    return [];
   }
+}
+function markSent(onboardingId: string, m: { from: string; to: string; threadId: string; text: string }): void {
+  sent.add(relayKey(onboardingId, m));
+  fs.mkdirSync(path.dirname(SENT_FILE), { recursive: true });
+  fs.writeFileSync(`${SENT_FILE}.tmp`, JSON.stringify([...sent]));
+  fs.renameSync(`${SENT_FILE}.tmp`, SENT_FILE);
+}
+function withTransport(onboardingId: string, events: any[]): any[] {
+  return events.map((e) =>
+    e.type === "relay.message"
+      ? { ...e, transport: sent.has(relayKey(onboardingId, { from: e.actor, to: e.to, threadId: e.threadId, message: e.message })) ? "agent_relay" : "simulated" }
+      : e,
+  );
 }
 
 // ── Express app ────────────────────────────────────────────────────────────
@@ -161,8 +201,10 @@ app.get("/api/onboardings/:id/events", async (req, res) => {
     const after = parseInt(req.query.after as string, 10) || 0;
     const actor = actors.OnboardingActor.get(req.params.id);
     const evts = await actor.getEvents(after);
+    // Send what this read queued (and wait for sends already in flight) before labelling:
+    // the dashboard reads each event once, so the label must be final when served.
     await drainRelayMessages(req.params.id);
-    res.json(evts);
+    res.json(withTransport(req.params.id, evts));
   } catch (err) {
     res.status(404).json({ error: `onboarding ${req.params.id} not found`, code: "not_found" });
   }

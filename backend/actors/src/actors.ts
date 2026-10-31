@@ -275,7 +275,9 @@ function doSetTask(a: any, id: TaskId, status: TaskStatus, at: number, summary?:
 }
 
 function doRelay(a: any, from: Actor_, to: Actor_, threadId: string, text: string, at: number, documentId?: DocumentId): void {
-  pushEvent(a, { type: "relay.message", actor: from, to, threadId, documentId, transport: "agent_relay", message: text }, at);
+  // "simulated" until the server confirms Agent Relay accepted the message (see
+  // backend/src/index.ts relaySend): a message that wasn't sent is never labelled as sent.
+  pushEvent(a, { type: "relay.message", actor: from, to, threadId, documentId, transport: "simulated", message: text }, at);
   a.lastRelayMessages = [...a.lastRelayMessages, { from, to, threadId, text, documentId }];
 }
 

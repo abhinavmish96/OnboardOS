@@ -2,8 +2,7 @@
  * Durable actor backend for OnboardOS.
  *
  * Mirrors the stand-in engine's behaviour exactly (step order, timing, event
- * shapes) but labels relay messages with transport: "agent_relay" instead of
- * "simulated". State is persisted to .data/store.json with atomic writes.
+ * shapes). Not used by index.ts; it sends nothing, so its relay messages are "simulated". State is persisted to .data/store.json with atomic writes.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -126,7 +125,7 @@ function relay(
 ): void {
   emit(
     r,
-    { type: "relay.message", actor: from, to, threadId, documentId, transport: "agent_relay", message },
+    { type: "relay.message", actor: from, to, threadId, documentId, transport: "simulated", message },
     at,
   );
 }
