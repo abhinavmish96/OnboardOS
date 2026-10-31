@@ -48,7 +48,7 @@ export function ReviewModal({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
             Review {doc.title} · v{doc.currentVersion}
@@ -69,13 +69,17 @@ export function ReviewModal({
             placeholder="Required when requesting changes"
           />
           {doc.id === "ledger_mapping" && doc.currentVersion === 1 && !comment && (
-            <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => setComment(SUGGESTED)}>
+            <button
+              type="button"
+              onClick={() => setComment(SUGGESTED)}
+              className="block text-left text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+            >
               Use: “{SUGGESTED}”
-            </Button>
+            </button>
           )}
           {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex-wrap gap-2">
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>

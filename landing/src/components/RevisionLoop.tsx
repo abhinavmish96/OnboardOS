@@ -34,7 +34,7 @@ export function RevisionLoop() {
           key={i}
           className={cn("rounded-xl border p-3 text-sm shadow-sm animate-in fade-in slide-in-from-bottom-1", TONE[s.tone])}
         >
-          <div className="mb-1 flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-ink/60">
+          <div className="mb-1 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-ink/60">
             {s.who}
             {s.who.includes("→") && (
               <Badge variant="outline" className="h-5 font-mono text-[10px]">

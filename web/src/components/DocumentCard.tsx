@@ -32,6 +32,8 @@ export function DocumentCard({
   const prev = doc.versions.find((x) => x.version === shown - 1);
   const decision = approvals.filter((a) => a.documentId === doc.id && a.version === shown).at(-1);
   const status = STATUS[doc.status];
+  // A configuration has settings, not journal entries: no debit and credit columns.
+  const entries = v?.rows.some((r) => r.debit !== "—" || r.credit !== "—") ?? false;
 
   return (
     <Card>
@@ -91,37 +93,53 @@ export function DocumentCard({
                 {decision.comment && <AlertDescription className="italic">“{decision.comment}”</AlertDescription>}
               </Alert>
             )}
-            <Table>
+            <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Scenario</TableHead>
-                  <TableHead>Rule</TableHead>
-                  <TableHead>Debit</TableHead>
-                  <TableHead>Credit</TableHead>
-                  <TableHead>Note</TableHead>
+                  <TableHead className="w-[38%]">{entries ? "Scenario" : "Setting"}</TableHead>
+                  <TableHead className="hidden w-[17%] sm:table-cell">Rule</TableHead>
+                  {entries ? (
+                    <>
+                      <TableHead>Debit</TableHead>
+                      <TableHead>Credit</TableHead>
+                    </>
+                  ) : (
+                    <TableHead>Value</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {v.rows.map((row, i) => {
                   const before = prev?.rows[i];
-                  const changed = before && (before.debit !== row.debit || before.credit !== row.credit);
+                  const debitChanged = before && before.debit !== row.debit;
+                  const creditChanged = before && before.credit !== row.credit;
                   return (
-                    <TableRow key={row.ruleId + i} className={cn(changed && "bg-sage/30 hover:bg-sage/30")}>
-                      <TableCell className="font-medium">{row.scenario}</TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">{row.ruleId}</TableCell>
-                      <TableCell>
-                        {changed && before.debit !== row.debit && (
-                          <s className="mr-1 text-danger">{before.debit}</s>
+                    <TableRow
+                      key={row.ruleId + i}
+                      className={cn((debitChanged || creditChanged) && "bg-sage/30 hover:bg-sage/30")}
+                    >
+                      <TableCell className="align-top whitespace-normal">
+                        <span className="font-medium">{row.scenario}</span>
+                        <span className="block font-mono text-[11px] text-muted-foreground sm:hidden">{row.ruleId}</span>
+                        {entries && row.note && (
+                          <span className="block text-xs text-muted-foreground">{row.note}</span>
                         )}
-                        {row.debit}
                       </TableCell>
-                      <TableCell>
-                        {changed && before.credit !== row.credit && (
-                          <s className="mr-1 text-danger">{before.credit}</s>
-                        )}
-                        {row.credit}
-                      </TableCell>
-                      <TableCell className="whitespace-normal text-muted-foreground">{row.note}</TableCell>
+                      <TableCell className="hidden align-top font-mono text-xs text-muted-foreground sm:table-cell">{row.ruleId}</TableCell>
+                      {entries ? (
+                        <>
+                          <TableCell className="align-top whitespace-normal">
+                            {debitChanged && <s className="block text-danger">{before.debit}</s>}
+                            {row.debit}
+                          </TableCell>
+                          <TableCell className="align-top whitespace-normal">
+                            {creditChanged && <s className="block text-danger">{before.credit}</s>}
+                            {row.credit}
+                          </TableCell>
+                        </>
+                      ) : (
+                        <TableCell className="align-top whitespace-normal">{row.note}</TableCell>
+                      )}
                     </TableRow>
                   );
                 })}

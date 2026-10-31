@@ -158,8 +158,8 @@ export default function Home() {
         <div className="grid overflow-hidden rounded-3xl lg:grid-cols-2">
           <div className="flex flex-col justify-between gap-10 bg-rosewood px-7 py-10 sm:px-12 sm:py-14">
             <span className="label-pill w-fit">AI business launch orchestrator</span>
-            <h1 className="text-5xl leading-[1.02] font-medium tracking-tight sm:text-6xl xl:text-7xl">
-              Launch your <RotatingWord /> without the back-and-forth.
+            <h1 className="text-5xl leading-[1.04] font-medium tracking-tight sm:text-6xl">
+              Launch your <RotatingWord /> without the <span className="whitespace-nowrap">back-and-forth.</span>
             </h1>
             <div className="space-y-7">
               <p className="max-w-md text-lg text-ink/80">

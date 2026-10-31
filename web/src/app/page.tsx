@@ -126,15 +126,15 @@ function Dashboard() {
 
   return (
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
-      <header className="flex flex-wrap items-center gap-4">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="min-w-0 flex-1">
-          <span className="label-pill">OnboardOS · {onboarding.requirements.product}</span>
+          <span className="label-pill max-w-full">OnboardOS · {onboarding.requirements.product}</span>
           <h1 className="mt-2 text-3xl font-medium tracking-tight">{onboarding.requirements.company}</h1>
         </div>
         <Badge variant="secondary" className={status.cls}>
           {status.label}
         </Badge>
-        <div className="w-44">
+        <div className="w-full sm:w-44">
           <Progress value={(done / onboarding.tasks.length) * 100} />
           <p className="mt-1 text-xs text-muted-foreground">
             {done} of {onboarding.tasks.length} stages complete
@@ -157,7 +157,7 @@ function Dashboard() {
         </Alert>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[240px_1fr_340px]">
+      <div className="grid gap-6 lg:grid-cols-[260px_1fr_340px]">
         <Card className="h-fit">
           <CardHeader>
             <CardTitle className="font-mono text-xs font-normal uppercase tracking-wider text-muted-foreground">Workflow</CardTitle>
