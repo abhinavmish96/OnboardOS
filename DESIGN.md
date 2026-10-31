@@ -139,8 +139,9 @@ Panel titles are mono uppercase labels, not headings.
 - **Panel:** 420 × 640, `rounded-2xl`, cream, hairline border, `shadow-2xl` (the one other
   allowed shadow). Stays mounted when closed, so the chat never resets.
 - **ChatKit theme** (`web/src/components/Onboardy.tsx`): light, `radius: "round"`, grayscale
-  hue 45 tint 2, accent ink `#0e1113`, surface cream/ink, Inclusive Sans and JetBrains Mono
-  loaded by URL (ChatKit draws in its own frame).
+  hue 45 tint 6 (gives the cream panel), accent ink `#0e1113`, Inclusive Sans and JetBrains
+  Mono loaded by URL (ChatKit draws in its own frame). Don't set `color.surface`: ChatKit
+  paints the composer with it, which turns the textbox solid ink.
 - **Voice:** an ops colleague. Answer first, name the document and version, say what changed
   and what happens next. Prompts are questions the admin would ask ("What needs my approval?").
 

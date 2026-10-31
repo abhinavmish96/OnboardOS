@@ -68,9 +68,8 @@ export function Onboardy({
       radius: "round",
       density: "normal",
       color: {
-        grayscale: { hue: 45, tint: 2, shade: 0 },
+        grayscale: { hue: 45, tint: 6, shade: 0 },
         accent: { primary: "#0e1113", level: 1 },
-        surface: { background: "#fbfaf4", foreground: "#0e1113" },
       },
       typography: {
         baseSize: 15,
