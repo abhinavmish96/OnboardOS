@@ -6,6 +6,7 @@ real agent-to-agent thread, and get the launch unblocked.
 
 ```
 OnboardOS/
+  DESIGN.md            ← design system: tokens, state colours, components, voice
   shared/contract.ts   ← THE contract: types, event names, API shapes. Both halves import it.
   web/                 ← Next.js dashboard (Abhi), shadcn/ui
     src/app/page.tsx         one dashboard route
