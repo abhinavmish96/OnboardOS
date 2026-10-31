@@ -16,10 +16,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from "@/lib/client";
 
 const STATUS: Record<Onboarding["status"], { label: string; cls: string }> = {
-  in_progress: { label: "Agents working", cls: "bg-sky-100 text-sky-800" },
-  awaiting_review: { label: "Needs your review", cls: "bg-amber-100 text-amber-900" },
-  revising: { label: "Revising", cls: "bg-violet-100 text-violet-800" },
-  launch_ready: { label: "Launch ready", cls: "bg-emerald-100 text-emerald-800" },
+  in_progress: { label: "Agents working", cls: "bg-teal text-ink" },
+  awaiting_review: { label: "Needs your review", cls: "bg-peach text-ink" },
+  revising: { label: "Revising", cls: "bg-dusty-pink/40 text-ink" },
+  launch_ready: { label: "Launch ready", cls: "bg-sage/70 text-ink" },
 };
 
 function Dashboard() {
@@ -86,16 +86,16 @@ function Dashboard() {
     return (
       <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-6 px-4 py-12">
         <div>
-          <p className="text-sm font-medium text-muted-foreground">OnboardOS</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">The AI business launch orchestrator</h1>
+          <span className="label-pill">OnboardOS</span>
+          <h1 className="mt-4 text-5xl leading-tight font-medium tracking-tight">The AI business launch orchestrator</h1>
           <p className="mt-3 text-muted-foreground">
             Finance, Document and Compliance agents take a new subscription business from requirements to
             launch-ready accounting, with a human approving every document.
           </p>
         </div>
-        <Card>
+        <Card className="border-0 bg-rosewood">
           <CardHeader>
-            <CardTitle>SpookyStream</CardTitle>
+            <CardTitle className="text-2xl font-medium">SpookyStream</CardTitle>
             <CardDescription>Fictional customer · $12.99 monthly streaming subscription</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -128,8 +128,8 @@ function Dashboard() {
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
       <header className="flex flex-wrap items-center gap-4">
         <div className="min-w-0 flex-1">
-          <p className="text-sm text-muted-foreground">OnboardOS · {onboarding.requirements.product}</p>
-          <h1 className="text-2xl font-semibold tracking-tight">{onboarding.requirements.company}</h1>
+          <span className="label-pill">OnboardOS · {onboarding.requirements.product}</span>
+          <h1 className="mt-2 text-3xl font-medium tracking-tight">{onboarding.requirements.company}</h1>
         </div>
         <Badge variant="secondary" className={status.cls}>
           {status.label}
@@ -143,9 +143,9 @@ function Dashboard() {
       </header>
 
       {onboarding.status === "launch_ready" && (
-        <Alert className="border-emerald-200 bg-emerald-50 text-emerald-900">
+        <Alert className="border-sage bg-sage/40 text-ink">
           <AlertTitle>Launch ready</AlertTitle>
-          <AlertDescription className="text-emerald-800">
+          <AlertDescription className="text-ink/80">
             Every document is approved at its current version. {onboarding.requirements.company} can launch.
           </AlertDescription>
         </Alert>
@@ -160,7 +160,7 @@ function Dashboard() {
       <div className="grid gap-6 lg:grid-cols-[240px_1fr_340px]">
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle className="text-base">Workflow</CardTitle>
+            <CardTitle className="font-mono text-xs font-normal uppercase tracking-wider text-muted-foreground">Workflow</CardTitle>
           </CardHeader>
           <CardContent>
             <Workflow tasks={onboarding.tasks} />
@@ -175,7 +175,7 @@ function Dashboard() {
 
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle className="text-base">Agent activity</CardTitle>
+            <CardTitle className="font-mono text-xs font-normal uppercase tracking-wider text-muted-foreground">Agent activity</CardTitle>
             <CardDescription>{events.length} events · newest first</CardDescription>
           </CardHeader>
           <CardContent>
@@ -199,7 +199,7 @@ function Dashboard() {
         <Button variant="outline" size="sm" onClick={() => router.push("/")}>
           New onboarding
         </Button>
-        {overdue && <span className="text-rose-600">An approval passed its SLA and was escalated.</span>}
+        {overdue && <span className="text-danger">An approval passed its SLA and was escalated.</span>}
         <span className="ml-auto">
           Clock +{Math.round(onboarding.clock.offsetMinutes / 60)}h · id {onboarding.id}
         </span>

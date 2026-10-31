@@ -81,14 +81,14 @@ export function ReviewModal({
           </Button>
           <Button
             variant="outline"
-            className="border-rose-300 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
+            className="border-clay/40 text-danger hover:bg-clay/10 hover:text-danger"
             disabled={busy !== null}
             onClick={() => submit("rejected")}
           >
             {busy === "rejected" ? "Sending…" : "Request changes"}
           </Button>
           <Button
-            className="bg-emerald-600 hover:bg-emerald-700"
+            className="bg-ok text-cream hover:bg-ok/90"
             disabled={busy !== null}
             onClick={() => submit("approved")}
           >

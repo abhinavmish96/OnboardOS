@@ -2,11 +2,11 @@ import type { Task } from "@contract/contract";
 import { ACTOR_LABEL } from "@/lib/client";
 
 const DOT: Record<Task["status"], string> = {
-  done: "bg-emerald-500 border-emerald-500",
-  running: "bg-amber-400 border-amber-400 animate-pulse",
-  changes_requested: "bg-rose-500 border-rose-500",
-  ready: "bg-white border-slate-400",
-  blocked: "bg-white border-slate-300",
+  done: "bg-ok border-ok",
+  running: "bg-terracotta border-terracotta animate-pulse",
+  changes_requested: "bg-danger border-danger",
+  ready: "bg-paper border-ink/40",
+  blocked: "bg-paper border-ink/20",
 };
 const LABEL: Record<Task["status"], string> = {
   done: "Done",
@@ -29,7 +29,7 @@ export function Workflow({ tasks }: { tasks: Task[] }) {
             <div className="flex flex-wrap items-baseline gap-x-2">
               <span className="font-medium text-foreground">{t.title}</span>
               <span
-                className={`text-xs ${t.status === "changes_requested" ? "text-rose-600" : "text-muted-foreground"}`}
+                className={`text-xs ${t.status === "changes_requested" ? "text-danger" : "text-muted-foreground"}`}
               >
                 {LABEL[t.status]}
               </span>

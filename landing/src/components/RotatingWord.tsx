@@ -11,7 +11,7 @@ export function RotatingWord() {
     return () => clearInterval(t);
   }, []);
   return (
-    <span key={i} className="inline-block animate-in fade-in slide-in-from-bottom-2 text-sky-600 duration-500">
+    <span key={i} className="inline-block animate-in fade-in slide-in-from-bottom-2 text-ink underline decoration-cream decoration-4 underline-offset-8 duration-500">
       {WORDS[i]}
     </span>
   );

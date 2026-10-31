@@ -11,10 +11,10 @@ import { cn } from "@/lib/utils";
 
 const STATUS: Record<Document["status"], { label: string; cls: string }> = {
   generating: { label: "Generating", cls: "bg-muted text-muted-foreground" },
-  in_compliance_review: { label: "Compliance review", cls: "bg-sky-100 text-sky-800" },
-  awaiting_approval: { label: "Awaiting approval", cls: "bg-amber-100 text-amber-900" },
-  changes_requested: { label: "Changes requested", cls: "bg-rose-100 text-rose-800" },
-  approved: { label: "Approved", cls: "bg-emerald-100 text-emerald-800" },
+  in_compliance_review: { label: "Compliance review", cls: "bg-teal text-ink" },
+  awaiting_approval: { label: "Awaiting approval", cls: "bg-peach text-ink" },
+  changes_requested: { label: "Changes requested", cls: "bg-clay/15 text-danger" },
+  approved: { label: "Approved", cls: "bg-sage/70 text-ink" },
 };
 
 export function DocumentCard({
@@ -36,8 +36,8 @@ export function DocumentCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{doc.title}</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl font-medium">{doc.title}</CardTitle>
+        <CardDescription className="font-mono text-xs uppercase tracking-wider">
           {doc.currentVersion ? `Current version ${doc.currentVersion}` : "Not generated yet"}
         </CardDescription>
         <CardAction className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export function DocumentCard({
 
         {!v ? (
           <p className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-amber-400" /> Document Agent is drafting…
+            <span className="h-2 w-2 animate-pulse rounded-full bg-terracotta" /> Document Agent is drafting…
           </p>
         ) : (
           <>
@@ -80,8 +80,8 @@ export function DocumentCard({
               <Alert
                 className={cn(
                   decision.decision === "approved"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                    : "border-rose-200 bg-rose-50 text-rose-900",
+                    ? "border-sage bg-sage/40 text-ink"
+                    : "border-clay/30 bg-clay/10 text-ink",
                 )}
               >
                 <AlertTitle>
@@ -106,18 +106,18 @@ export function DocumentCard({
                   const before = prev?.rows[i];
                   const changed = before && (before.debit !== row.debit || before.credit !== row.credit);
                   return (
-                    <TableRow key={row.ruleId + i} className={cn(changed && "bg-emerald-50 hover:bg-emerald-50")}>
+                    <TableRow key={row.ruleId + i} className={cn(changed && "bg-sage/30 hover:bg-sage/30")}>
                       <TableCell className="font-medium">{row.scenario}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{row.ruleId}</TableCell>
                       <TableCell>
                         {changed && before.debit !== row.debit && (
-                          <s className="mr-1 text-rose-500">{before.debit}</s>
+                          <s className="mr-1 text-danger">{before.debit}</s>
                         )}
                         {row.debit}
                       </TableCell>
                       <TableCell>
                         {changed && before.credit !== row.credit && (
-                          <s className="mr-1 text-rose-500">{before.credit}</s>
+                          <s className="mr-1 text-danger">{before.credit}</s>
                         )}
                         {row.credit}
                       </TableCell>

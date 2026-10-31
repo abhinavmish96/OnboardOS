@@ -4,11 +4,11 @@ import { ACTOR_LABEL } from "@/lib/client";
 import { cn } from "@/lib/utils";
 
 const COLOR: Record<string, string> = {
-  finance_agent: "bg-violet-100 text-violet-800",
-  document_agent: "bg-sky-100 text-sky-800",
-  compliance_agent: "bg-teal-100 text-teal-800",
-  orchestrator: "bg-muted text-foreground",
-  human_reviewer: "bg-amber-100 text-amber-900",
+  finance_agent: "bg-sage text-ink",
+  document_agent: "bg-teal text-ink",
+  compliance_agent: "bg-sand text-ink",
+  orchestrator: "bg-muted text-ink",
+  human_reviewer: "bg-peach text-ink",
 };
 
 function time(at: string) {
@@ -35,9 +35,9 @@ export function ActivityFeed({ events }: { events: WorkflowEvent[] }) {
             key={e.id}
             className={cn(
               "rounded-lg border p-3 text-sm",
-              relay && "border-violet-200 bg-violet-50/60",
-              alert && "border-rose-200 bg-rose-50",
-              done && "border-emerald-200 bg-emerald-50",
+              relay && "border-dusty-pink/40 bg-dusty-pink/15",
+              alert && "border-clay/30 bg-clay/10",
+              done && "border-sage bg-sage/30",
               !relay && !alert && !done && "bg-card",
             )}
           >

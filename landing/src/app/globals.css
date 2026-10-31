@@ -5,10 +5,29 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Desert-palette blocks */
+  --color-cream: #fbfaf4;
+  --color-paper: #fcfbf7;
+  --color-ink: #0e1113;
+  --color-sage: #adb49c;
+  --color-teal: #c3d3ce;
+  --color-forest: #181e1d;
+  --color-terracotta: #db704c;
+  --color-sand: #d6d0c3;
+  --color-clay: #d53712;
+  --color-dark-teal: #1c525d;
+  --color-dusty-pink: #b6969d;
+  --color-peach: #f8dbca;
+  --color-rosewood: #cc9087;
+  --color-slate-blue: #344b5a;
+  --color-ok: #3c8a52;
+  --color-warn: #c2691a;
+  --color-danger: #be3a2e;
+  --color-info: #1e8c8c;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-code);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -122,4 +141,45 @@
     @apply bg-background text-foreground;
     @apply bg-background text-foreground;
   }
+}
+/* Desert theme over shadcn's defaults: cream paper, ink text, flat blocks, 12px corners. */
+:root {
+  --radius: 0.75rem;
+  --background: #fbfaf4;
+  --foreground: #0e1113;
+  --card: #fcfbf7;
+  --card-foreground: #0e1113;
+  --popover: #fcfbf7;
+  --popover-foreground: #0e1113;
+  --primary: #0e1113;
+  --primary-foreground: #fbfaf4;
+  --secondary: #f2f1eb;
+  --secondary-foreground: #0e1113;
+  --muted: #f2f1ea;
+  --muted-foreground: #5d6366;
+  --accent: #e9e8e0;
+  --accent-foreground: #0e1113;
+  --destructive: #be3a2e;
+  --border: rgba(14, 17, 19, 0.12);
+  --input: rgba(14, 17, 19, 0.2);
+  --ring: #db704c;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "ss01";
+}
+
+/* Small mono pill label, as on the reference site */
+.label-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.3rem 0.8rem;
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(14, 17, 19, 0.08);
 }
